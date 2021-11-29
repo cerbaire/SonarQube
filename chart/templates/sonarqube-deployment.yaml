@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f SonarQube.yml
+    kompose.version: 1.24.0 (4a2a0458)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: sonarqube
+  name: sonarqube
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: sonarqube
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f SonarQube.yml
+        kompose.version: 1.24.0 (4a2a0458)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/sonarnet: "true"
+        io.kompose.service: sonarqube
+    spec:
+      containers:
+        - env:
+            - name: SONARQUBE_EMAIL
+              value: nicolas@roquebert.net
+            - name: SONARQUBE_PASSWORD
+              value: password
+            - name: SONARQUBE_PORT_NUMBER
+              value: "9000"
+            - name: SONARQUBE_USERNAME
+              value: admin
+            - name: SONAR_ES_BOOTSTRAP_CHECKS_DISABLE
+              value: "true"
+            - name: sonar.jdbc.password
+              value: sonar
+            - name: sonar.jdbc.url
+              value: jdbc:postgresql://db:5432/sonar
+            - name: sonar.jdbc.username
+              value: sonar
+          image: sonarqube
+          name: sonarqube
+          ports:
+            - containerPort: 9000
+          resources: {}
+          volumeMounts:
+            - mountPath: /opt/sonarqube/conf
+              name: sonarqube-conf
+            - mountPath: /opt/sonarqube/data
+              name: sonarqube-data
+            - mountPath: /opt/sonarqube/extensions
+              name: sonarqube-extensions
+            - mountPath: /opt/sonarqube/lib/bundled-plugins
+              name: sonarqube-bundled-plugins
+      restartPolicy: Always
+      volumes:
+        - name: sonarqube-conf
+          persistentVolumeClaim:
+            claimName: sonarqube-conf
+        - name: sonarqube-data
+          persistentVolumeClaim:
+            claimName: sonarqube-data
+        - name: sonarqube-extensions
+          persistentVolumeClaim:
+            claimName: sonarqube-extensions
+        - name: sonarqube-bundled-plugins
+          persistentVolumeClaim:
+            claimName: sonarqube-bundled-plugins
+status: {}

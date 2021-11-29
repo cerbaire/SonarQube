@@ -1,0 +1,21 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: sonar-pv-volume-extensions
+  labels:
+    io.kompose.service: sonarqube
+    type: extensions
+  namespace: sonar
+spec:
+  storageClassName: hostpath
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce # https://cloud.google.com/kubernetes-engine/docs/concepts/persistent-volumes?hl=fr
+# https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+  hostPath:
+    path: /Users/nicolasroquebert/SonarQube/volumes/extensions
+#    path: "/host_mnt/d/Qobuz/Downloads" # https://github.com/docker/for-win/issues/1703 (kubectl describe pods) MountVolume.SetUp failed for volume "odaseva-pv-volume" : hostPath type check failed: /host_mnt/d/data is not a directory
+#    path: /D/data # https://github.com/docker/for-win/issues/1703
+    type: Directory
+# https://docs.openshift.com/container-platform/3.5/install_config/storage_examples/binding_pv_by_label.html
